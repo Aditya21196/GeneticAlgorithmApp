@@ -15,10 +15,8 @@ public class Crankshaft {
     int fitness;
     String doneBy;
 
-    Random rand;
 
     public Crankshaft(){
-        rand=new Random();
         fitness=0;
     }
 
@@ -81,12 +79,14 @@ public class Crankshaft {
     public int randFilletR() {
         int lower=46;
         int upper=52;
+        Random rand=new Random();
         return lower+rand.nextInt(upper-lower+1);
     }
 
     public int randCrankDia() {
         int lower=84;
         int upper=96;
+        Random rand=new Random();
         return lower+rand.nextInt(upper-lower+1);
     }
 
@@ -94,6 +94,7 @@ public class Crankshaft {
 
         int lower=30;
         int upper=40;
+        Random rand=new Random();
         return lower+rand.nextInt(upper-lower+1);
 
     }
@@ -107,6 +108,7 @@ public class Crankshaft {
     public int randMat() {
         int lower=-1;
         int upper=1;
+        Random rand=new Random();
         return lower+rand.nextInt(upper-lower+1);
     }
 

@@ -12,7 +12,7 @@ public class GenerationOfCrankshafts {
     ArrayList<Integer> fitnesses=new ArrayList<>();
     int avFitness;
     int number;
-    int done;
+    ArrayList<String> done=new ArrayList<>();
 
     public int getAvFitness() {
         return avFitness;
@@ -22,11 +22,11 @@ public class GenerationOfCrankshafts {
         this.avFitness = avFitness;
     }
 
-    public int getDone() {
+    public ArrayList<String> getDone() {
         return done;
     }
 
-    public void setDone(int done) {
+    public void setDone(ArrayList<String> done) {
         this.done = done;
     }
 

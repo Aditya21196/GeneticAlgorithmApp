@@ -37,7 +37,6 @@ public class Algo9000 extends AppCompatActivity {
         setContentView(R.layout.activity_algo9000);
         this.createGenAlgo9000 = (Button) findViewById(R.id.createGenAlgo9000);
         this.genListAlgo9000 = (ListView) findViewById(R.id.genListAlgo9000);
-
         adapterGenerationAlgo9000=new AdapterGenerationAlgo9000(Algo9000.this,generations);
         genListAlgo9000.setAdapter(adapterGenerationAlgo9000);
 
@@ -86,16 +85,19 @@ public class Algo9000 extends AppCompatActivity {
                     }else{
                         int latest=generations.size()-1;
                         GenerationOfCrankshafts latestGen=generations.get(latest);
-                        if(generations.get(latest).getDone()==12){
+                        ArrayList<Integer> fits=new ArrayList<>();
+                        if(generations.get(latest).getDone().size()==12){
                             int fitSum=0;
                             for(int i=0;i<12;i++){
-                                fitSum+=generations.get(latest).fitnesses.get(i);
+                                int f=generations.get(latest).getCrankshafts().get(i).getFitness();
+                                fitSum+=f;
+                                fits.add(f);
                             }
                             ArrayList<Crankshaft> newcs=new ArrayList<>();
                             for(int i=0;i<6;i++){
                                 //parents
-                                Crankshaft p1=latestGen.getCrankshafts().get(choose(latestGen.getFitnesses(),fitSum));
-                                Crankshaft p2=latestGen.getCrankshafts().get(choose(latestGen.getFitnesses(),fitSum));
+                                Crankshaft p1=latestGen.getCrankshafts().get(choose(fits,fitSum));
+                                Crankshaft p2=latestGen.getCrankshafts().get(choose(fits,fitSum));
                                 //mate and mutate
                                 Crankshaft c1=mate(p1,p2);
                                 Crankshaft c2=mate(p1,p2);
@@ -124,7 +126,7 @@ public class Algo9000 extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i=new Intent(Algo9000.this,CrankList.class);
-                i.putExtra("index","0");
+                i.putExtra("index",Integer.toString(position));
                 startActivity(i);
             }
         });
@@ -207,9 +209,9 @@ public class Algo9000 extends AppCompatActivity {
         }
     }
 
-    int fitness(double input){
-        return (int)Math.pow(100.0/input,8);
-    }
+//    int fitness(double input){
+//        return (int)Math.pow(100.0/input,8);
+//    }
 
     int choose(ArrayList<Integer> fitnesses,int fitSum){
         int r=rand.nextInt(fitSum);

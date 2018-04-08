@@ -11,7 +11,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,7 +46,7 @@ public class CrankList extends AppCompatActivity {
 
         algoRef= FirebaseDatabase.getInstance().getReference().child("algo9000").child("generations")
                 .child(index).child("crankshafts");
-        Log.d("aaaa","index:"+index);
+        Log.d("aaaa","index: "+index);
 
         algoRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -84,30 +86,51 @@ public class CrankList extends AppCompatActivity {
                     public void onClick(final DialogInterface dialog, int which) {
                         String m_Text = input.getText().toString();
                         if(isNumeric(m_Text)){
-                            final int d=fitness(Double.parseDouble(m_Text)/100.0);
-                            final DatabaseReference dr=FirebaseDatabase.getInstance().getReference().child("algo9000")
-                                    .child("generations")
-                                    .child(index);
-                            dr.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    int done=dataSnapshot.child("done").getValue(Integer.class);
-                                    int avFitness=dataSnapshot.child("avFitness").getValue(Integer.class);
+                            final int d=fitness(Double.parseDouble(m_Text));
+                            if(d!=0){
+//                                Toast.makeText(CrankList.this,d+"  here",Toast.LENGTH_SHORT).show();
+                                final DatabaseReference dr=FirebaseDatabase.getInstance().getReference().child("algo9000")
+                                        .child("generations")
+                                        .child(index);
+                                dr.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        int done=(int)dataSnapshot.child("done").getChildrenCount();
+                                        int avFitness=dataSnapshot.child("avFitness").getValue(Integer.class);
+                                        Log.d("YO","done"+ done);
+                                        Log.d("YO","avFitness"+ avFitness);
 
-                                    int totalFitness=avFitness*done;
+                                        int totalFitness=avFitness*done;
+                                        Log.d("YO","total"+ totalFitness);
+                                        avFitness=(totalFitness+d)/(done+1);
 
-                                    dr.child("avFitness").setValue((totalFitness+d)/(done+1));
-                                    dr.child("done").child(Integer.toString(position)).setValue(ServerValue.TIMESTAMP);
+                                        Log.d("YO","avFitness"+ avFitness);
+                                        dr.child("avFitness").setValue((totalFitness+d)/(done+1));
+                                        dr.child("done").child(Integer.toString(position)).setValue(Integer.toString(position));
 
-                                    algoRef.child(Integer.toString(position)).child("fitness").setValue(d);
-                                    dialog.dismiss();
-                                }
+                                        algoRef.child(Integer.toString(position)).child("fitness").setValue(d);
+                                        String email= FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                                        if(email.equals("adityac@gmail.com")){
+                                            algoRef.child(Integer.toString(position)).child("doneBy").setValue("Aditya Chawla");
+                                        }
+                                        if(email.equals("amrita@mech.com")){
+                                            algoRef.child(Integer.toString(position)).child("doneBy").setValue("Amrita");
+                                        }
+                                        if(email.equals("adityal@mech.com")){
+                                            algoRef.child(Integer.toString(position)).child("doneBy").setValue("Aditya Lamba");
+                                        }
+                                        if(email.equals("aayushd@mech.com")){
+                                            algoRef.child(Integer.toString(position)).child("doneBy").setValue("Aayush Deol");
+                                        }
+                                        dialog.dismiss();
+                                    }
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
 
-                                }
-                            });
+                                    }
+                                });
+                            }
 
 
                         }
@@ -126,7 +149,8 @@ public class CrankList extends AppCompatActivity {
     }
 
     int fitness(double input){
-        return (int)Math.pow(100.0/input,8);
+        return (int)Math.pow(input,1.6);
+
     }
 
     public static boolean isNumeric(String str)
